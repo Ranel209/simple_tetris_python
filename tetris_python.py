@@ -212,6 +212,8 @@ while True:
             if not check_borders():
                 figure = deepcopy(figure_old)
                 break
+
+            
     # Check lines
     line, lines = height - 1, 0
     for row in range(height - 1, -1, -1):
