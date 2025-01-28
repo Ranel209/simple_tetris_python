@@ -2,7 +2,6 @@ import pygame
 from copy import deepcopy
 from random import choice, randrange
 
-<<<<<<< HEAD
 # Creating the game window
 width, height = 10, 15  
 tile = 45  
@@ -79,18 +78,61 @@ def set_record(record, score):
         f.write(str(rec))
 
 
+def save_highscore(name, score):
+    """Save a player's name and score to the highscore list."""
+    try:
+        with open('highscores.txt', 'a') as f:
+            f.write(f"{name}: {score}\n")
+    except Exception as e:
+        print(f"Error saving highscore: {e}")
+
+
+def display_highscores():
+    """Display the highscore list from the text file."""
+    while True:
+        sc.fill(bg_color)
+
+        highscores_title = main_font.render("Highscores", True, pygame.Color('gold'))
+        sc.blit(highscores_title, (res[0] // 2 - highscores_title.get_width() // 2, 100))
+
+        try:
+            with open('highscores.txt', 'r') as f:
+                lines = f.readlines()
+                for i, line in enumerate(lines[:10]):  # Display top 10 scores
+                    score_text = font.render(line.strip(), True, pygame.Color('white'))
+                    sc.blit(score_text, (200, 200 + i * 40))
+        except FileNotFoundError:
+            no_score_text = font.render("No highscores yet!", True, pygame.Color('white'))
+            sc.blit(no_score_text, (res[0] // 2 - no_score_text.get_width() // 2, 200))
+
+        exit_text = font.render("Press ESC to go back", True, pygame.Color('white'))
+        sc.blit(exit_text, (res[0] // 2 - exit_text.get_width() // 2, 700))
+
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return
+
+
 def game_over_screen():
-    """Display the game over screen with options to retry or exit."""
+    """Display the game over screen with options to retry, exit, or view highscores."""
     while True:
         sc.fill(bg_color)
         game_over_text = main_font.render("GAME OVER", True, pygame.Color('red'))
         retry_text = font.render("Press R to Retry", True, pygame.Color('white'))
+        highscores_text = font.render("Press H for Highscores", True, pygame.Color('white'))
         exit_text = font.render("Press ESC to Exit", True, pygame.Color('white'))
 
         # Display texts
         sc.blit(game_over_text, (res[0] // 2 - game_over_text.get_width() // 2, 300))
         sc.blit(retry_text, (res[0] // 2 - retry_text.get_width() // 2, 450))
-        sc.blit(exit_text, (res[0] // 2 - exit_text.get_width() // 2, 500))
+        sc.blit(highscores_text, (res[0] // 2 - highscores_text.get_width() // 2, 500))
+        sc.blit(exit_text, (res[0] // 2 - exit_text.get_width() // 2, 550))
 
         pygame.display.flip()
 
@@ -101,6 +143,8 @@ def game_over_screen():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:  # Retry
                     return True
+                elif event.key == pygame.K_h:  # View highscores
+                    display_highscores()
                 elif event.key == pygame.K_ESCAPE:  # Exit
                     pygame.quit()
                     exit()
@@ -216,29 +260,14 @@ while True:
     sc.blit(title_record, (525, 650))
     sc.blit(font.render(record, True, pygame.Color('gold')), (550, 710))
 
-    # Game over check
+    # Check game over
     for i in range(width):
         if field[0][i]:
             set_record(record, score)
+            save_highscore("Player", score)  # Replace "Player" with an actual player name input if desired
             if not game_over_screen():
                 pygame.quit()
                 exit()
-            field = [[0 for _ in range(width)] for _ in range(height)]
-            anim_count, anim_speed, anim_limit = 0, 60, 2000
-            score = 0
-            break
 
     pygame.display.flip()
     clock.tick(FPS)
-=======
-width, height = 10, 15  # Width and Height of the game grid
-tile = 45  # Size of a tile
-game_res = width * tile, height * tile  # Game surface resolution
-res = 750, 940  # Window resolution
-FPS = 60
-
-pygame.init()
-sc = pygame.display.set_mode(res)  # Main screen
-game_sc = pygame.Surface(game_res)  # Game surface (grid area)
-clock = pygame.time.Clock()
->>>>>>> 22a2f6e (game window)
